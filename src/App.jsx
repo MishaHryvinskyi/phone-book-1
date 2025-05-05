@@ -1,20 +1,26 @@
 import Form from './Components/Form/Form'
 
 import { ToastContainer, toast } from 'react-toastify';
-import { useState } from 'react'
-import { Container } from './Container/Container'
+import { useEffect, useState } from 'react'
+import { Container, QuantityText } from './Container/Container'
 import Filter from './Components/Filter/Filter';
 import List from './Components/List/List';
+import Modal from './Components/Modal/Modal'
 
 function App() {
 const [filter, setFilter] = useState('');
-const [books, setBooks] = useState([
-    {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-    {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-    {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-    {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-]);
+const [books, setBooks] = useState(() => {
+  const saved = localStorage.getItem('books');
+  return saved ? JSON.parse(saved) : [];
+});
+const [isOpen, setIsOpen] = useState(false);
 
+
+useEffect(() => {
+  localStorage.setItem('books', JSON.stringify(books))
+}, [books]);
+
+const toggleModal = () => setIsOpen(!isOpen);
 const handleFilterChange = e => setFilter(e.target.value)
 const normalizedFilter = filter.toLowerCase();
 const visibleBooks = books.filter(({name}) => name.toLowerCase().includes(normalizedFilter));
@@ -45,13 +51,16 @@ const handleSubmit = text => {
   return (
     <Container>
       <h1>PhoneBook</h1>
-      <Form handleSubmit={handleSubmit}/>
+      <button type='button' onClick={toggleModal}>Відкрити форму</button>
+     {isOpen && <Modal toggleOpen={toggleModal}>
+        <Form handleSubmit={handleSubmit}/>
+      </Modal>}
       <Filter 
         handleFilterChange={handleFilterChange} 
         filter={filter}
       />
+      <QuantityText>Кількість контактів: {books.length}</QuantityText>
       <List visibleBooks={visibleBooks} deleteContact={deleteContact}/>
-      <p>Кількість контактів: {books.length}</p>
       <ToastContainer />
     </Container>
   )

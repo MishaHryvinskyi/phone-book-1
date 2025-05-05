@@ -1,14 +1,15 @@
+import { FilterStyled } from "./Filter.styled";
 
 const Filter = ({ handleFilterChange, filter }) => {
     return (
-        <label> Пошук за іменем
+        <FilterStyled> Пошук за іменем
             <input 
               type="text" 
               name="filter" 
               value={filter} 
               onChange={handleFilterChange}
             />
-        </label>
+        </FilterStyled>
     )
 }
 
